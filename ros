@@ -1,0 +1,120 @@
+能运行ros相应的命令 source /opt/ros/indigo/setup.bash
+rospack find [包名称]返回软件包的地址
+roscd [本地包名称[/子目录]] roscd roscpp
+rosls [本地包名称[/子目录]] rosls roscpp_tutorials
+catkin程序包(符合要求的程序包)：包含catkin compliant package.xml文件，这个package.xml文件提供有关程序包的元信息。包含一个catkin 版本的CMakeLists.txt文件，而Catkin metapackages中必须包含一个对CMakeList.txt文件的引用。每个目录下只能有一个程序包。这意味着在同一个目录下不能有嵌套的或者多个程序包存在。 
+catkin_create_pkg：创建程序包
+rospack depends1 beginner_tutorials：查看一级依赖包 depends递归显示
+编译ros包：在文件夹上输入catkin_make 
+catkin_make [make_targets] [-DCMAKE_VARIABLES=...]编译产生 build devel src空间
+理解ros节点：
+Nodes:节点,一个节点即为一个可执行文件，它可以通过ROS与其它节点进行通信。
+Messages:消息，消息是一种ROS数据类型，用于订阅或发布到一个话题。
+Topics:话题,节点可以发布消息到话题，也可以订阅话题以接收消息。
+Master:节点管理器，ROS名称服务 (比如帮助节点找到彼此)。
+rosout: ROS中相当于stdout/stderr。
+roscore: 主机+ rosout + 参数服务器。运行所有ros程序前首先运行roscore
+rosnode list：列出当前活跃的节点 rosnode info /rosout返回节点信息
+rosout：用于收集和记录节点调 
+rosrun [package_name] [node_name]：运行一个包内节点
+rosrun turtlesim turtlesim_node __name:=my_turtle：改变节点名称
+rosnode ping node_name（或重新配置的）的节点信息
+rosrun rqt_graph rqt_graph：显示当前运行的节点和话题
+rostopic：控制有关ROS话题的信息，rostopic -h获取帮助信息，rostopic echo [topic]输出话题连接的节点
+rostopic type [topic]查看话题消息类型
+rosmsg show [消息类型]查看详细情况
+rostopic pub -1 /turtle1/cmd_vel geometry_msgs/Twist -- '[2.0, 0.0, 0.0]' '[0.0, 0.0, 1.8]'：发布数据到话题 rostopic pub [topic] [msg_type] [args]
+rostopic hz [topic]：发布信息频率
+rosrun rqt_plot rqt_plot：发布数据变化图形
+rosservice：使用 ROS 客户端/服务器框架提供的服务
+rosservice type spawn| rossrv show：了解带参数的服务
+rosservice call spawn 2 2 0.2 ""（加入新乌龟）：调入带参数的服务
+rosparam：存储并操作ROS 参数服务器（Parameter Server）上的数据
+rosparam set background_r 150：存储参数
+rosparam get /（或文件名+参数名）：显示参数服务器上的所有内容
+rosparam load params.yaml copy：把某文件copy到新的命名空间
+rosparam dump params.yaml：讲所有参数写入文件
+rqt_console、roslaunch：调试工具。rqt_console显示节点信息，属于ros日志框架一部分。
+rqt_graph：直接写。
+roslaunch：定义在launch文件中的多个节点关系并同时启动，用xml来写。roslaunch [package][filename.launch]。
+rosed：编辑ros中的文件。
+rosed [package_name] [filename]：指定包名字直接编辑
+msg：一个描述ROS中所使用消息类型的简单文本。它们会被用来生成不同语言的源代码。创建消息对.msg使用
+srv：描述一项服务。它包含两个部分：请求和响应。
+rosmsg show [message type]：识别消息
+roscp [package_name] [file_to_copy_path] [copy_path]：附近服务文件
+rossrv show <service type>：识别服务
+编写c++节点：在包目录建立src，写入cpp程序。
+发送器：端点、消息对象、消息速率。初始化ROS系统，在ROS网络内广播我们将要在chatter topic上发布std_msgs/String消息，以每秒10次的频率在chatter上发布消息。 
+接收器：端点、消息对象、回调函数。初始化ROS系统，订阅chatter topic，进入自循环，等待消息的到达，当消息到达，调用chatterCallback()函数。
+然后修改包的CMakeLists.txt
+测试发布器和订阅器：rosrun 包名 程序
+移除数据包：\ rm -rf 包名
+寻找ros第三方数据包资源：
+ros wiki
+roslocate uri 包名得到地址后用git命令安装包到个人目录。只在ros包或堆提交到检索程序之后才有用。cd ~/catkin_ws/src、git clone git://网址、cd ~/catkin_ws、catkin_make、source devel /setup.bash
+使用ros wiki的browse software
+使用google
+
+ros使用opencv：在CMakeList.txt添加这句话：
+find_package(OpenCV)
+include_directories(${OpenCV_INCLUDE_DIRS})
+target_link_libraries(my_awesome_library ${OpenCV_LIBRARIES})
+opencv3跟opencv2有冲突，find_package(OpenCV 2 REQUIRED)这句话可以避免冲突
+
+ros使用摄像头：
+安装驱动：sudo apt-get install ros-hydro-uvc-camera，source /opt/ros/hydro/setup.bash
+显示图片：rosrun uvc_camera uvc_camera_node，rosrun image_view image_view image:=/image_raw（图片框）
+使用opencv人脸识别：
+启动ros环境：source /opt/ros/indigo/serup.bash，roscore
+运行摄像头设备驱动节点：source ~/catkin_ws_usbcam/devel/setup.bash、rosrun uvc_camera(usb_cam) uvc_camera_node，图像会不断发布到/camera/image_raw主题上
+图像显示和处理节点cvbridge，作为数据类型转换（接收节点）
+
+运行ros：
+roscore 
+source devel/setup.bash
+rosrun usb_cam usb_cam_node
+rosrun maprecognition maprecognition 
+
+ros开摄像头 
+rosrun usb_cam usb_cam_node video_device:=/dev/videox
+rosrun image_view image_view image:=/usb_cam/image_raw 
+或者launch文件 	
+roslaunch usb_cam usb_cam.launch
+
+运行dso跑dataset步骤
+进入dso
+source dso_run
+
+运行dso_ros步骤
+设置export $ROS_PACKAGE_PATH = ~/documents/dso_ros 和 ~/documents/catkin_ws
+进入catkin_ws/src/usb_cam/launch启动usb_cam-test.launch文件(分辨率为1280*1024)
+进入dso_ros source dso_ros_run启动ros(已经写好脚本)
+
+\rm -rf devel build install catkin清除命令
+
+catkin_make --pkg package_name 重新构建单独的包
+
+catkin_create_pkg package_name depends依赖项 新建一个catkin程序包
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,184 @@
+opencv程序：chmod +x build_all.sh、./build_all.sh编译opencv程序
+
+qt配置opencv：http://blog.csdn.net/moc062066/article/details/6615811
+在pro把lib的地址放入在/usr/local/lib：INCLUDEPATH += /usr/local/include/opencv \、
+/usr/local/include/opencv2、LIBS += /usr/local/lib/libopencv_core.so.2.2、LIBS += /usr/local/lib/libopencv_highgui.so.2.2等等
+
+git小技巧：
+新建仓库：
+echo "xxx" >> README.md
+git clone + 仓库的url
+在本地新建了一个仓库，将code复制过去
+进入文件夹
+git add *
+git commit -m "first commit"
+git push origin master
+更新仓库：
+git init
+git remote add origin https://github.com/gogojjh/objectR.git
+git push -u origin master
+
+运行opencv程序:
+g++/gcc Test.c -o Test `pkg-config --cflags --libs opencv`
+
+sudo fdisk -l 查看disk结构
+挂载硬盘:
+sudo ntfsfix /dev/sdXY
+sudo mount -o rw /dev/sdXY
+
+320x240
+图像金字塔：几何变换中除了用resize做图像缩放后，还可以使用图像金字塔，图像金字塔是视觉运用中广泛采用的一项技术。
+向下采样：高斯内核卷积+去掉偶数行和列。
+向上采样：扩展为原来两倍填充0+高斯内核卷积。
+高斯金字塔：向下取样
+拉普拉斯金字塔：用来从金字塔低层图像重建上层未采样图像
+
+uname -m && cat /etc/*release：验证Ubuntu系统，获得系统版本信息。
+sudo lsb_release -a 同上
+
+github page 常用命令：
+	git clone git@github.com:username/username.github.com.git //本地如果无远程代码，先做这步，不然就忽略
+	cd .ssh/username.github.com //定位到你blog的目录下
+	git pull origin master //先同步远程文件，后面的参数会自动连接你远程的文件
+	git status //查看本地自己修改了多少文件
+	git add . //添加远程不存在的git文件
+	git commit -m "what I want tFold to someone"
+	git push origin master //更新到远程服务器上
+	git remote add origin https://github.com/gogojjh/sensor_imu.git //远程连接
+
+寻找文件是否含有某关键字：find . -name \* -type f -print | xargs grep "FEATURED TAGS" 
+
+http://blog.csdn.net/maclechan/article/details/44964439
+
+运行opengl的程序 gcc -o glexample glexample.c -lGL -lGLU -lglut
+
+重启网络 sudo service network-manager restart
+
+挂载硬盘 sudo ntfsfix /dev/sda5
+
+解压文件 tar zxvf yasm-1.2.0.tar.gz
+
+卸载ros sudo apt-get remove ros-*
+
+pkg-config --modversion opencv
+2.4.9.1
+
+pkg-config --cflags opencv
+-I/usr/include/opencv
+
+pkg-config --libs opencv
+#这里有好多.so文件的路径，每个人都不尽一样，略去。
+
+录制屏幕
+ffmpeg -f x11grab -s 1600x1200 -r 25 -i :0.0 ./out.mpg
+
+配置使用lib
+1. 创建文件 /etc/ld.so.conf.d/libprotobuf.conf 包含内容
+/usr/local/lib
+2. 输入命令
+ldconfig
+再运行protoc –version 就可以正常看到版本号了
+
+编译opencv3
+-DWITH_IPP=OFF
+
+我的linux编译默认库目录
+cd /etc/ld.so.conf
+
+opencv分版本编译
+g++ main.cpp -o main `pkg-config --libs --cflags opencv249`
+//选择249版本编译
+g++ main.cpp -o main `pkg-config --libs --cflags opencv320`
+//选择320版本编译
+
+输出浮点数
+使用setprecision(n)可控制输出流显示浮点数的数字个数。
+C++默认的流输出数值有效位是6。
+如果setprecision(n)与setiosflags(ios::fixed)合用，可以控制小数点右边的数字个数。setiosflags(ios::fixed)是用定点方式表示实数。
+如果与setiosflags(ios::scientific)合用， 可以控制指数表示法的小数位数。setiosflags(ios::scientific)是用指数方式表示实数。
+setiosflags(ios::fixed) 固定的浮点显示
+setiosflags(ios::scientific) 指数表示
+setiosflags(ios::left) 左对齐
+setiosflags(ios::right) 右对齐
+setiosflags(ios::skipws) 忽略前导空白
+setiosflags(ios::uppercase) 16进制数大写输出
+setiosflags(ios::lowercase) 16进制小写输出
+setiosflags(ios::showpoint) 强制显示小数点
+setiosflags(ios::showpos) 强制显示符号
+
+如cout << setiosflags(ios::fixed) << setprecision(4) << double << endl;
+表示double保留四位小数输出
+
+linux下U盘取消只读
+	tail -f /var/log/syslog      
+	插入u盘
+	观察命令行输出
+	输出:
+		Jul  8 16:44:50 cslouis-pc kernel: [15595.155904] FAT: Filesystem error (dev sdb4)
+		Jul  8 16:44:50 cslouis-pc kernel: [15595.155905]    fat_get_cluster: invalid cluster chain (i_pos 0)
+		从上面可以看出U盘挂载的文件系统是/dev/sdb4，且文件系统有故障（FAT: Filesystem error）
+	umount /media/ZCF(ZCF是你的U盘名，可以在media目录下用ls查看)
+	修复U盘文件系统故障	
+		sudo dosfsck -v -a /dev/sdb4(sdb)
+
+OpenCV Mat取某一位置的像素 -> 常用第一种
+ p.b = color.at<cv::Vec3b>(r,c)[0];
+ p.g = color.at<cv::Vec3b>(r,c)[1];
+ p.r = color.at<cv::Vec3b>(r,c)[2];
+
+ uchar *data = color.ptr<uchar>(r);
+ p.b = data[ c*color.channels() ];
+ p.g = data[ c*color.channels()+1 ];
+ p.r = data[ c*color.channels()+2 ];
+
+ p.b = color.data[ r*color.step+c*color.channels() ];
+ p.g = color.data[ r*color.step+c*color.channels()+1 ];
+ p.r = color.data[ r*color.step+c*color.channels()+2 ];
+
+在文件夹里寻找某个文件是否有"xxx"
+grep -n -H -R "xxx"
+
+CMake 配置Opencv
+# opencv 
+set(OpenCV_DIR /usr/local/opencv-2.4.9/share/OpenCV)
+find_package( OpenCV 2.4 REQUIRED )
+set(OpenCV_INCLUDE_DIRS /usr/local/opencv-2.4.9/include)
+set(OpenCV_LIBRARY_DIR /usr/local/opencv-2.4.9/lib)
+include_directories( ${OpenCV_INLCUDE_DIRS} )
+link_directories( ${OpenCV_LIBRARY_DIR} )
+
+记录命令行输出
+tee (-a) xx.txt
+script -a xx.txt   -------   exit
+
+查看硬盘大小
+df -hl
+
+时间测量
+#ifdef COMPILEDWITHC11
+        std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
+#else
+        std::chrono::monotonic_clock::time_point t1 = std::chrono::monotonic_clock::now();
+#endif
+
+#ifdef COMPILEDWITHC11
+        std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
+#else
+        std::chrono::monotonic_clock::time_point t2 = std::chrono::monotonic_clock::now();
+#endif
+
+double ttrack= std::chrono::duration_cast<std::chrono::duration<double> >(t2 - t1).count();
+以s为单位
+
+传文件 
+scp 文件在本机路径xx.txt chiao@192.168.1.3:/home/chiao/desktop/
+
+运行程序显示opencv版本不同->降版本
+	结果显示我的版本是2.4.11啊，但是系统需要2.4.8…这时候我们可以这么做：
+	ln -s /usr/local/lib/libopencvxxx2.4.so target_path/lib/libopencvxxx2.4.8.so
+
+
+
+
+
+
